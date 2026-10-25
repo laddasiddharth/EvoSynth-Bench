@@ -1,0 +1,63 @@
+{
+  "@context": "https://schema.org/",
+  "@type": "Dataset",
+  "name": "EvoSynth-Bench: Multi-Algorithm Hyperparameter Optimization Trajectories & Pathological Landscapes Benchmark",
+  "alternateName": "EvoSynth-Bench",
+  "version": "1.0.0",
+  "description": "A standardized benchmark dataset comprising 120 multi-algorithm hyperparameter optimization (HPO) trajectories (GA, PSO, DE, CMA-ES) across XGBoost, LightGBM, and Random Forest, paired with a 2,000-sample pathological non-convex classification landscape designed with 30% asymmetric label noise to stress-test meta-optimizer exploration and escape mechanisms.",
+  "url": "https://github.com/laddasiddharth/evosynth-bench",
+  "sameAs": "https://doi.org/10.5281/zenodo.10892002",
+  "identifier": [
+    "https://doi.org/10.5281/zenodo.10892002",
+    "https://github.com/laddasiddharth/evosynth-bench"
+  ],
+  "keywords": [
+    "AutoML",
+    "Hyperparameter Optimization",
+    "Meta-Optimization",
+    "Genetic Algorithm",
+    "Particle Swarm Optimization",
+    "Differential Evolution",
+    "CMA-ES",
+    "Surrogate Modeling",
+    "Pathological Landscapes",
+    "Multi-Armed Bandit"
+  ],
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "creator": [
+    {
+      "@type": "Person",
+      "name": "Siddharth Ladda",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "Department of Computer Science and Engineering"
+      }
+    },
+    {
+      "@type": "Organization",
+      "name": "Group G002 - Automated Machine Learning & Optimization Lab"
+    }
+  ],
+  "publisher": {
+    "@type": "Organization",
+    "name": "EvoSynth Open Source Initiative",
+    "url": "https://github.com/laddasiddharth/evosynth-bench"
+  },
+  "datePublished": "2026-10-25",
+  "dateModified": "2026-10-25",
+  "isAccessibleForFree": true,
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "text/csv",
+      "contentUrl": "https://raw.githubusercontent.com/laddasiddharth/evosynth-bench/main/data/pathological_classification_benchmark.csv",
+      "name": "Pathological Classification Benchmark (2000 samples, 20 features, 30% noise)"
+    },
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "text/csv",
+      "contentUrl": "https://raw.githubusercontent.com/laddasiddharth/evosynth-bench/main/data/evosynth_hpo_trajectories.csv",
+      "name": "Full HPO Optimization Trajectories across 4 metaheuristic algorithms"
+    }
+  ]
+}
