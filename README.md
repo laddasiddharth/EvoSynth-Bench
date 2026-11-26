@@ -1,128 +1,131 @@
-# EvoSynth-Bench: Multi-Algorithm HPO Trajectories & Pathological Landscapes Benchmark
+# EvoSynth-Bench: Real-World Benchmark Splits for AutoML Meta-Optimizers
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10892002.svg)](https://doi.org/10.5281/zenodo.10892002)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23645119.svg)](https://doi.org/10.5281/zenodo.23645119)
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
-[![Dataset Version](https://img.shields.io/badge/Version-v1.0.0-emerald.svg)](VERSION.md)
-[![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://python.org)
+[![Dataset Version](https://img.shields.io/badge/Version-v2.0.0-emerald.svg)](VERSION.md)
 
-**EvoSynth-Bench** is an open-source, research-grade benchmark dataset developed to evaluate automated machine learning (AutoML) meta-optimizers, multi-armed bandit dispatchers, and surrogate-assisted hyperparameter search algorithms. 
+**EvoSynth-Bench** is the benchmark definition used to evaluate **EvoSynth**, a dynamic
+multi-armed-bandit meta-optimizer that runs GA, PSO, DE and CMA-ES side by side for model
+selection and hyperparameter tuning.
 
-It provides two complementary assets:
-1. **A Non-Convex Pathological Classification Benchmark (`data/pathological_classification_benchmark.csv`)**: A 2,000-instance landscape featuring 30% label-flip noise and high feature collinearity designed specifically to induce local stagnation and stress-test escape mechanisms in black-box optimizers.
-2. **Multi-Algorithm Optimization Trajectory Logs (`data/evosynth_hpo_trajectories.csv`)**: 120 discrete evaluation episodes mapping 8-dimensional continuous/discrete hyperparameter vectors across 4 evolutionary heuristics (GA, PSO, DE, CMA-ES) and 3 model backends (XGBoost, LightGBM, Random Forest).
+Version 2 defines **eight real-world datasets** (seven tabular classification datasets and
+Fashion-MNIST for neural architecture search) and the **exact rows** every method is searched,
+retrained and tested on. Anyone can therefore reproduce the experiments on identical data and
+compare a new optimizer on the same footing.
+
+> Version 1.0.0 (synthetic "pathological" dataset and early optimization trajectories) has been
+> retired and remains available in the Zenodo version history. See [VERSION.md](VERSION.md).
+> Optimization trajectories from the re-run experiments will be added in a later version.
 
 ---
 
-## 📁 Repository Organization
+## Datasets
+
+| Dataset | Source | Rows | Features | Classes | Metric | Test / search / train rows |
+| :--- | :--- | ---: | ---: | ---: | :--- | :--- |
+| Covertype | [UCI](https://archive.ics.uci.edu/dataset/31/covertype) (scikit-learn `fetch_covtype`) | 581,012 | 54 | 7 | accuracy | 20,000 / 20,000 / 60,000 |
+| HIGGS (98k version) | [OpenML 23512](https://www.openml.org/d/23512) | 98,050 | 28 | 2 | ROC AUC | 20,000 / 20,000 / 60,000 |
+| Adult (Census Income) | [OpenML 1590](https://www.openml.org/d/1590) | 48,842 | 14 | 2 | ROC AUC | 12,000 / 20,000 / 36,000 |
+| Airlines delay | [OpenML 1169](https://www.openml.org/d/1169) | 539,383 | 7 | 2 | ROC AUC | 20,000 / 20,000 / 60,000 |
+| Poker Hand (v2) | [OpenML 1569](https://www.openml.org/d/1569) | 1,025,000 | 10 | 9 | accuracy | 20,000 / 20,000 / 60,000 |
+| MiniBooNE | [OpenML 41150](https://www.openml.org/d/41150) | 130,064 | 50 | 2 | ROC AUC | 20,000 / 20,000 / 60,000 |
+| Jannis | [OpenML 41168](https://www.openml.org/d/41168) | 83,733 | 54 | 4 | accuracy | 20,000 / 20,000 / 60,000 |
+| Fashion-MNIST | [torchvision](https://github.com/zalandoresearch/fashion-mnist) | 70,000 images | 28×28 | 10 | accuracy | official 10,000 test / 10,000 search-train / 2,500 search-validation |
+
+Binary datasets are scored with ROC AUC (several are imbalanced, e.g. Adult 76/24);
+multiclass datasets with accuracy. The full catalogue, with source licences, is
+[`data/datasets.csv`](data/datasets.csv).
+
+**The data itself is not redistributed.** Each dataset is downloaded from its original source
+under that source's licence (listed in `data/datasets.csv`); this release contributes the split
+definitions, preprocessing and loader.
+
+## How the splits are made
+
+For each tabular dataset (all with `data_seed = 42`):
+
+1. **test**: a stratified sample of *test rows*, split off first. No search ever sees these rows.
+2. **search**: a stratified sample from the remaining rows; optimizers cross-validate candidate
+   configurations on it.
+3. **train**: a stratified sample from the remaining rows; the selected configuration (and every
+   baseline) is retrained on it and scored once on **test**.
+
+`search` and `train` may overlap (both are training data); neither overlaps `test`.
+Fashion-MNIST keeps its official test set and draws the search-train and search-validation
+images from the official training set.
+
+Row indices refer to the row order of the source as downloaded (scikit-learn / OpenML /
+torchvision), counting from 0.
+
+## Preprocessing
+
+Applied once to the whole dataset, identically for every method (no labels are used):
+
+- labels re-coded to `0..K-1` (sorted original labels);
+- categorical / text columns → integer codes (categories sorted), missing → their own code;
+- missing numeric values → the column median (HIGGS has 1 such row).
+
+---
+
+## Repository organization
 
 ```text
-evosynth-bench/
+EvoSynth-Bench/
 ├── data/
-│   ├── pathological_classification_benchmark.csv  # 2,000 samples, 20 features, 30% label flip
-│   ├── evosynth_hpo_trajectories.csv              # 120 complete evaluations across 4 algorithms
-│   ├── tier1_trajectories.csv                     # 40% Tier-1 exploitation tournament logs
-│   ├── tier2_trajectories.csv                     # 60% Tier-2 exploration reserve logs
-│   └── warmup_trajectories.csv                    # Latin Hypercube Sampling initial seed set
+│   ├── datasets.csv            # catalogue: source, OpenML id, licence, size, metric, split sizes
+│   └── splits/
+│       ├── <dataset>.csv       # row_index, split (test | search | train | search+train)
+│       └── fashion_mnist.csv   # row_index, split (search_train | search_val)
 ├── scripts/
-│   └── load_dataset.py                            # Standalone validation and loading script
-├── metadata.json                                  # Schema.org & DataCite machine-readable metadata
-├── VERSION.md                                     # Semantic version history and release notes
-├── requirements.txt                               # Minimal runtime dependencies
-├── LICENSE                                        # Creative Commons Attribution 4.0 International
-└── README.md                                      # Dataset specification and user documentation
+│   └── load_dataset.py         # downloads a dataset, applies the preprocessing and the splits
+├── metadata.json               # schema.org metadata
+├── VERSION.md                  # version history
+├── requirements.txt
+├── LICENSE                     # CC BY 4.0 (this release's files)
+└── README.md
 ```
 
----
+## Quickstart
 
-## 📊 Dataset Specifications & Schemas
-
-### 1. Pathological Classification Benchmark
-- **File**: `data/pathological_classification_benchmark.csv`
-- **Samples**: 2,000 instances
-- **Features**: 20 continuous numerical variables (`feat_00` to `feat_19`)
-  - 5 Informative features (informative linear signals)
-  - 10 Redundant features (linear combinations of informative signals)
-  - 5 Random Gaussian noise features
-- **Target**: Binary classification label `target` $\in \{0, 1\}$
-- **Label Noise**: 30% random asymmetric label flip (`flip_y=0.30`) to simulate high real-world measurement corruption and penalize greedy memorization.
-
-### 2. Multi-Algorithm HPO Trajectories
-- **File**: `data/evosynth_hpo_trajectories.csv`
-- **Episodes**: 120 recorded evaluations across two co-evolving tiers
-- **Column Descriptions**:
-  | Column Name | Type | Description |
-  | :--- | :--- | :--- |
-  | `Eval_ID` | Integer | Global sequential evaluation index |
-  | `Algorithm` | String | Metaheuristic operator (`T1_GA`, `T1_PSO`, `T1_DE`, `T1_CMAES`, `T2_PSO`, etc.) |
-  | `Fitness` | Float | 3-Fold Stratified Cross-Validation Accuracy score (%) |
-  | `model_type` | Categorical | Classifier family (`XGBoost`, `LightGBM`, `RandomForest`) |
-  | `learning_rate` | Float | Boosting shrinkage factor $[0.01, 0.30]$ |
-  | `n_estimators` | Integer | Number of boosting trees $[50, 500]$ |
-  | `max_depth` | Integer | Maximum tree depth $[3, 10]$ |
-  | `subsample` | Float | Row subsampling ratio $[0.5, 1.0]$ |
-  | `colsample_bytree` | Float | Feature subsampling ratio $[0.3, 1.0]$ |
-  | `reg_alpha` | Float | L1 regularization parameter $[0.0, 10.0]$ |
-  | `booster` | Categorical | Tree booster type (`gbtree`, `dart`) |
-  | `tier` | String | Co-evolutionary hierarchy (`Warmup`, `Tier-1 Exploitation`, `Tier-2 Exploration`) |
-
----
-
-## 🚀 Quickstart & Usage
-
-### Installation
-Clone this repository and install minimal dependencies:
 ```bash
-git clone https://github.com/laddasiddharth/evosynth-bench.git
-cd evosynth-bench
+git clone https://github.com/laddasiddharth/EvoSynth-Bench.git
+cd EvoSynth-Bench
 pip install -r requirements.txt
+python scripts/load_dataset.py                 # validate the split files (no download)
+python scripts/load_dataset.py --fetch adult   # download Adult and build its splits
 ```
 
-### Loading with Pandas
 ```python
-import pandas as pd
+import sys; sys.path.insert(0, "scripts")
+from load_dataset import load_splits
 
-# Load the pathological dataset
-df = pd.read_csv("data/pathological_classification_benchmark.csv")
-X = df.drop(columns=["target"])
-y = df["target"]
-print(f"Dataset shape: {X.shape}, Target distribution: {y.value_counts().to_dict()}")
-
-# Load HPO trajectories
-trajectories = pd.read_csv("data/evosynth_hpo_trajectories.csv")
-print(trajectories.groupby(["Algorithm", "model_type"])["Fitness"].agg(["count", "mean", "max"]))
+parts = load_splits("higgs")            # downloads once (OpenML cache), then splits
+X_search, y_search = parts["search"]    # tune on these rows
+X_train,  y_train  = parts["train"]     # retrain the chosen configuration
+X_test,   y_test   = parts["test"]      # score once
 ```
 
-### Automated Verification
-Run the built-in loader script:
-```bash
-python scripts/load_dataset.py
-```
+The same splits are produced inside EvoSynth by `evosynth.datasets.partition` (exported with
+`tools/export_splits.py` in the EvoSynth repository).
 
 ---
 
-## 🎯 Annotation & Generation Guidelines
-1. **Label Generation**: The dataset targets are generated synthetically via an underlying non-linear hypercube manifold corrupted by controlled Bernoulli noise ($p=0.30$).
-2. **No Human Annotator Bias**: All labels and evaluations are generated programmatically with explicit random seeds (`seed=42`) ensuring $100\%$ reproducibility.
-3. **Reproducibility Guarantee**: Every hyperparameter configuration in the trajectory table can be evaluated deterministically using scikit-learn, XGBoost, and LightGBM.
+## License
 
----
+The files in this release (split definitions, catalogue, scripts, documentation) are licensed
+under **Creative Commons Attribution 4.0 International (CC BY 4.0)**. The datasets remain under
+their own licences; see `data/datasets.csv` and each source page.
 
-## 📜 License
-This dataset is distributed under the **Creative Commons Attribution 4.0 International License (CC-BY-4.0)**. You are free to share, copy, distribute, and adapt the dataset for academic and commercial purposes with appropriate attribution to Group G002.
-
----
-
-## 📚 Citation
-If you use EvoSynth-Bench in your research or benchmarks, please cite:
+## Citation
 
 ```bibtex
 @dataset{evosynth_bench_2026,
-  author    = {Ladda, Siddharth and Group G002 Research Team},
-  title     = {EvoSynth-Bench: Multi-Algorithm Hyperparameter Optimization Trajectories and Pathological Landscapes Benchmark},
+  author    = {Loya, Kaushal and Ladda, Siddharth and Reddy, Paarthu and Narang, Priyansh and Kharat, Shivam},
+  title     = {EvoSynth-Bench: Real-World Benchmark Splits for AutoML Meta-Optimizers},
   year      = {2026},
   publisher = {Zenodo},
-  version   = {v1.0.0},
-  doi       = {10.5281/zenodo.10892002},
-  url       = {https://github.com/laddasiddharth/evosynth-bench}
+  version   = {v2.0.0},
+  doi       = {10.5281/zenodo.23645119},
+  url       = {https://doi.org/10.5281/zenodo.23645119}
 }
 ```

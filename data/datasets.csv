@@ -1,0 +1,9 @@
+dataset,kind,source,openml_id,url,source_licence,rows,features,classes,test,search,train,metric,data_seed
+adult,tabular,openml,1590,https://www.openml.org/d/1590,Public (OpenML); UCI original CC BY 4.0,48842,14,2,12000,20000,36000,roc_auc,42
+airlines,tabular,openml,1169,https://www.openml.org/d/1169,Public (OpenML),539383,7,2,20000,20000,60000,roc_auc,42
+covertype,tabular,sklearn.fetch_covtype,,https://archive.ics.uci.edu/dataset/31/covertype,CC BY 4.0,581012,54,7,20000,20000,60000,accuracy,42
+fashion_mnist,image,torchvision.FashionMNIST,,https://github.com/zalandoresearch/fashion-mnist,MIT,70000,784,10,10000,12500,10000,accuracy,42
+higgs,tabular,openml,23512,https://www.openml.org/d/23512,Public (OpenML); UCI original CC BY 4.0,98050,28,2,20000,20000,60000,roc_auc,42
+jannis,tabular,openml,41168,https://www.openml.org/d/41168,Public (OpenML),83733,54,4,20000,20000,60000,accuracy,42
+miniboone,tabular,openml,41150,https://www.openml.org/d/41150,CC0 (OpenML); UCI original CC BY 4.0,130064,50,2,20000,20000,60000,roc_auc,42
+poker_hand,tabular,openml,1569,https://www.openml.org/d/1569,Public (OpenML); UCI original CC BY 4.0,1025000,10,9,20000,20000,60000,accuracy,42

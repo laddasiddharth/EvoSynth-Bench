@@ -1,63 +1,55 @@
 {
   "@context": "https://schema.org/",
   "@type": "Dataset",
-  "name": "EvoSynth-Bench: Multi-Algorithm Hyperparameter Optimization Trajectories & Pathological Landscapes Benchmark",
+  "name": "EvoSynth-Bench: Real-World Benchmark Splits for AutoML Meta-Optimizers",
   "alternateName": "EvoSynth-Bench",
-  "version": "1.0.0",
-  "description": "A standardized benchmark dataset comprising 120 multi-algorithm hyperparameter optimization (HPO) trajectories (GA, PSO, DE, CMA-ES) across XGBoost, LightGBM, and Random Forest, paired with a 2,000-sample pathological non-convex classification landscape designed with 30% asymmetric label noise to stress-test meta-optimizer exploration and escape mechanisms.",
-  "url": "https://github.com/laddasiddharth/evosynth-bench",
-  "sameAs": "https://doi.org/10.5281/zenodo.10892002",
+  "version": "2.0.0",
+  "description": "Benchmark definition used to evaluate the EvoSynth meta-optimizer: eight real-world datasets (Covertype, HIGGS, Adult, Airlines, Poker Hand, MiniBooNE, Jannis, Fashion-MNIST) with the exact held-out test, search and retraining rows (data_seed 42), the preprocessing, and a loader that fetches each dataset from its original source. The datasets themselves are not redistributed.",
+  "url": "https://doi.org/10.5281/zenodo.23645119",
+  "sameAs": "https://github.com/laddasiddharth/EvoSynth-Bench",
   "identifier": [
-    "https://doi.org/10.5281/zenodo.10892002",
-    "https://github.com/laddasiddharth/evosynth-bench"
+    "https://doi.org/10.5281/zenodo.23645119",
+    "https://github.com/laddasiddharth/EvoSynth-Bench"
   ],
   "keywords": [
     "AutoML",
     "Hyperparameter Optimization",
     "Meta-Optimization",
+    "Benchmark",
     "Genetic Algorithm",
     "Particle Swarm Optimization",
     "Differential Evolution",
     "CMA-ES",
-    "Surrogate Modeling",
-    "Pathological Landscapes",
-    "Multi-Armed Bandit"
+    "Multi-Armed Bandit",
+    "Neural Architecture Search"
   ],
   "license": "https://creativecommons.org/licenses/by/4.0/",
   "creator": [
-    {
-      "@type": "Person",
-      "name": "Siddharth Ladda",
-      "affiliation": {
-        "@type": "Organization",
-        "name": "Department of Computer Science and Engineering"
-      }
-    },
-    {
-      "@type": "Organization",
-      "name": "Group G002 - Automated Machine Learning & Optimization Lab"
-    }
+    {"@type": "Person", "name": "Kaushal Loya"},
+    {"@type": "Person", "name": "Siddharth Ladda"},
+    {"@type": "Person", "name": "Paarthu Reddy"},
+    {"@type": "Person", "name": "Priyansh Narang"},
+    {"@type": "Person", "name": "Shivam Kharat"}
   ],
-  "publisher": {
-    "@type": "Organization",
-    "name": "EvoSynth Open Source Initiative",
-    "url": "https://github.com/laddasiddharth/evosynth-bench"
-  },
   "datePublished": "2026-10-25",
-  "dateModified": "2026-10-25",
+  "dateModified": "2026-11-26",
   "isAccessibleForFree": true,
+  "isBasedOn": [
+    "https://archive.ics.uci.edu/dataset/31/covertype",
+    "https://www.openml.org/d/23512",
+    "https://www.openml.org/d/1590",
+    "https://www.openml.org/d/1169",
+    "https://www.openml.org/d/1569",
+    "https://www.openml.org/d/41150",
+    "https://www.openml.org/d/41168",
+    "https://github.com/zalandoresearch/fashion-mnist"
+  ],
   "distribution": [
     {
       "@type": "DataDownload",
       "encodingFormat": "text/csv",
-      "contentUrl": "https://raw.githubusercontent.com/laddasiddharth/evosynth-bench/main/data/pathological_classification_benchmark.csv",
-      "name": "Pathological Classification Benchmark (2000 samples, 20 features, 30% noise)"
-    },
-    {
-      "@type": "DataDownload",
-      "encodingFormat": "text/csv",
-      "contentUrl": "https://raw.githubusercontent.com/laddasiddharth/evosynth-bench/main/data/evosynth_hpo_trajectories.csv",
-      "name": "Full HPO Optimization Trajectories across 4 metaheuristic algorithms"
+      "contentUrl": "https://raw.githubusercontent.com/laddasiddharth/EvoSynth-Bench/main/data/datasets.csv",
+      "name": "Dataset catalogue (sources, licences, sizes, metrics, split sizes)"
     }
   ]
 }
