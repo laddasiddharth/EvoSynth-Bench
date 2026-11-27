@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23645119.svg)](https://doi.org/10.5281/zenodo.23645119)
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
-[![Dataset Version](https://img.shields.io/badge/Version-v2.0.0-emerald.svg)](VERSION.md)
+[![Dataset Version](https://img.shields.io/badge/Version-v2.1.0-emerald.svg)](VERSION.md)
 
 **EvoSynth-Bench** is the benchmark definition used to evaluate **EvoSynth**, a dynamic
 multi-armed-bandit meta-optimizer that runs GA, PSO, DE and CMA-ES side by side for model
@@ -15,7 +15,10 @@ compare a new optimizer on the same footing.
 
 > Version 1.0.0 (synthetic "pathological" dataset and early optimization trajectories) has been
 > retired and remains available in the Zenodo version history. See [VERSION.md](VERSION.md).
-> Optimization trajectories from the re-run experiments will be added in a later version.
+
+Version 2.1 adds the **first results on these splits** ([`results/smoke_seed42/`](results/smoke_seed42/)):
+every evaluation of EvoSynth, Optuna TPE and the optimizer ablation, plus the final
+held-out scores of every method.
 
 ---
 
@@ -65,6 +68,38 @@ Applied once to the whole dataset, identically for every method (no labels are u
 - categorical / text columns → integer codes (categories sorted), missing → their own code;
 - missing numeric values → the column median (HIGGS has 1 such row).
 
+## Results (v2.1.0): smoke run, seed 42
+
+EvoSynth, Random Search and Optuna TPE each had 500 evaluations on 10,000 of the search rows
+(2-fold CV), the same confirm-before-select step (top 5 distinct configurations re-scored with
+5-fold CV) and the same refit on the train rows. FLAML had the same wall time as EvoSynth.
+Every method is scored once on the test rows.
+
+| Method | Covertype test accuracy | Adult test ROC AUC |
+| :--- | ---: | ---: |
+| Untuned XGBoost / LightGBM / RandomForest / ExtraTrees | 85.58 / 84.69 / 89.09 / 89.77 | 92.70 / 92.92 / 90.74 / 89.15 |
+| FLAML | 92.53 | **93.13** |
+| Random Search | **93.89** | 92.98 |
+| Optuna TPE | 93.87 | 92.95 |
+| EvoSynth | **93.89** | 92.96 |
+
+Also included: an optimizer ablation on Covertype (GA, PSO, DE and CMA-ES each alone for 500
+evaluations vs EvoSynth; best search CV 82.21 / 82.35 / 82.34 / 82.35 vs 82.35), a speed-up
+benchmark (6.1× from parallel evaluation on 12 threads) and neural architecture search on
+Fashion-MNIST (81.8% validation accuracy, 160 evaluations). One seed only: differences of a few
+hundredths between tuned methods are ties.
+
+| Folder | Contents |
+| :--- | :--- |
+| `summary/` | `main_table.csv` (test score, latency, model size per method), `ablation_table.csv`, `nas_table.csv`, `convergence/` (best-so-far curves) |
+| `trajectories/` | One row per evaluation: `evosynth_<dataset>.csv` (phase, island, fitness, configuration), `optuna_tpe_<dataset>.csv`, `ablation_cvgs500_covertype_{evosynth,isolated}.csv`, `nas_fashion_mnist_evosynth.csv` |
+| `runs/` | `<run>.result.json` (scores, selected configuration, confirmation, inference cost) and `<run>.manifest.json` (command, settings, package versions, timing) for all 13 runs |
+
+Fitness values are 2-fold CV scores in percent on the 10,000 search rows (accuracy for
+Covertype, ROC AUC for Adult). Random Search's per-trial scores were not recorded; its final
+result is in `runs/`. The runs were produced by the EvoSynth command
+`python tools/run_experiments.py smoke`.
+
 ---
 
 ## Repository organization
@@ -76,6 +111,8 @@ EvoSynth-Bench/
 │   └── splits/
 │       ├── <dataset>.csv       # row_index, split (test | search | train | search+train)
 │       └── fashion_mnist.csv   # row_index, split (search_train | search_val)
+├── results/
+│   └── smoke_seed42/           # v2.1.0: summary tables, per-evaluation trajectories, run records
 ├── scripts/
 │   └── load_dataset.py         # downloads a dataset, applies the preprocessing and the splits
 ├── metadata.json               # schema.org metadata
@@ -112,7 +149,7 @@ The same splits are produced inside EvoSynth by `evosynth.datasets.partition` (e
 
 ## License
 
-The files in this release (split definitions, catalogue, scripts, documentation) are licensed
+The files in this release (split definitions, catalogue, results, scripts, documentation) are licensed
 under **Creative Commons Attribution 4.0 International (CC BY 4.0)**. The datasets remain under
 their own licences; see `data/datasets.csv` and each source page.
 
@@ -124,7 +161,7 @@ their own licences; see `data/datasets.csv` and each source page.
   title     = {EvoSynth-Bench: Real-World Benchmark Splits for AutoML Meta-Optimizers},
   year      = {2026},
   publisher = {Zenodo},
-  version   = {v2.0.0},
+  version   = {v2.1.0},
   doi       = {10.5281/zenodo.23645119},
   url       = {https://doi.org/10.5281/zenodo.23645119}
 }

@@ -1,10 +1,10 @@
 {
   "@context": "https://schema.org/",
   "@type": "Dataset",
-  "name": "EvoSynth-Bench: Real-World Benchmark Splits for AutoML Meta-Optimizers",
+  "name": "EvoSynth-Bench: Real-World Benchmark Splits and Results for AutoML Meta-Optimizers",
   "alternateName": "EvoSynth-Bench",
-  "version": "2.0.0",
-  "description": "Benchmark definition used to evaluate the EvoSynth meta-optimizer: eight real-world datasets (Covertype, HIGGS, Adult, Airlines, Poker Hand, MiniBooNE, Jannis, Fashion-MNIST) with the exact held-out test, search and retraining rows (data_seed 42), the preprocessing, and a loader that fetches each dataset from its original source. The datasets themselves are not redistributed.",
+  "version": "2.1.0",
+  "description": "Benchmark definition used to evaluate the EvoSynth meta-optimizer: eight real-world datasets (Covertype, HIGGS, Adult, Airlines, Poker Hand, MiniBooNE, Jannis, Fashion-MNIST) with the exact held-out test, search and retraining rows (data_seed 42), the preprocessing, and a loader that fetches each dataset from its original source. The datasets themselves are not redistributed. Version 2.1 adds the first results on these splits (seed 42, Covertype and Adult): held-out test scores of EvoSynth, Random Search, Optuna TPE, FLAML and untuned models, an optimizer ablation, a speed-up benchmark, Fashion-MNIST NAS, and every evaluation's trajectory.",
   "url": "https://doi.org/10.5281/zenodo.23645119",
   "sameAs": "https://github.com/laddasiddharth/EvoSynth-Bench",
   "identifier": [
@@ -25,14 +25,29 @@
   ],
   "license": "https://creativecommons.org/licenses/by/4.0/",
   "creator": [
-    {"@type": "Person", "name": "Kaushal Loya"},
-    {"@type": "Person", "name": "Siddharth Ladda"},
-    {"@type": "Person", "name": "Paarthu Reddy"},
-    {"@type": "Person", "name": "Priyansh Narang"},
-    {"@type": "Person", "name": "Shivam Kharat"}
+    {
+      "@type": "Person",
+      "name": "Kaushal Loya"
+    },
+    {
+      "@type": "Person",
+      "name": "Siddharth Ladda"
+    },
+    {
+      "@type": "Person",
+      "name": "Paarthu Reddy"
+    },
+    {
+      "@type": "Person",
+      "name": "Priyansh Narang"
+    },
+    {
+      "@type": "Person",
+      "name": "Shivam Kharat"
+    }
   ],
   "datePublished": "2026-10-25",
-  "dateModified": "2026-11-26",
+  "dateModified": "2026-11-27",
   "isAccessibleForFree": true,
   "isBasedOn": [
     "https://archive.ics.uci.edu/dataset/31/covertype",
@@ -50,6 +65,12 @@
       "encodingFormat": "text/csv",
       "contentUrl": "https://raw.githubusercontent.com/laddasiddharth/EvoSynth-Bench/main/data/datasets.csv",
       "name": "Dataset catalogue (sources, licences, sizes, metrics, split sizes)"
+    },
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "text/csv",
+      "contentUrl": "https://raw.githubusercontent.com/laddasiddharth/EvoSynth-Bench/main/results/smoke_seed42/summary/main_table.csv",
+      "name": "Held-out test score, latency and model size of every method (smoke run, seed 42)"
     }
   ]
 }
